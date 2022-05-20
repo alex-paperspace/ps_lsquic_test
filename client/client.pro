@@ -15,6 +15,8 @@ SOURCES += \
 HEADERS += \
     mainwindow.h
 
+include(../ps_lsquic/link_ps_lsquic.pri)
+
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin

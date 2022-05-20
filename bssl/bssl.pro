@@ -5,3 +5,6 @@ boringssl.commands =    export BORINGSSL_SRC=$$PWD/boringssl; \
 
 QMAKE_EXTRA_TARGETS += boringssl
 PRE_TARGETDEPS += boringssl
+
+DISTFILES += \
+    link_boringssl.pri

@@ -1,9 +1,20 @@
 TEMPLATE = subdirs
 
-SUBDIRS += \
-    client \
-    bssl \
+SUBDIRS += client
+client.depends += \
+    ps_lsquic \
     lsquiclib \
+    bssl
 
-client.depends += lsquiclib
-lsquiclib.depends += bssl
+SUBDIRS += bssl #boringssl build wrapper
+
+SUBDIRS += lsquiclib #lsquic build wrapper
+lsquiclib.depends += \
+    bssl
+
+SUBDIRS += ps_lsquic #packaged utilities for ps_lsquic
+ps_lsquic.depends += \
+    lsquiclib \
+    bssl
+
+
