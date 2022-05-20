@@ -1,10 +1,9 @@
-TEMPLATE = lib
+TEMPLATE = aux
 
-boringssl.target = bssl
-boringssl.commands = echo "Building BoringSSL..."; \
-                     $$PWD/../scripts/build-boringssl.sh; \
-                     echo "Finished building BoringSSL.";
-boringssl.depends =
+boringssl.commands =    export SOURCEDIR=$$PWD/..; \
+                        export LC_ALL=C; \
+                        $$PWD/../scripts/build-boringssl.sh; \
+
 
 QMAKE_EXTRA_TARGETS += boringssl
-PRE_TARGETDEPS += bssl
+PRE_TARGETDEPS += boringssl
