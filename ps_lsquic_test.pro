@@ -1,9 +1,9 @@
 TEMPLATE = subdirs
 
 SUBDIRS += \
-    bssl \
     client \
-    lsquiclib
+    bssl \
+    lsquiclib \
 
-client.depends += lsquic
+client.depends += lsquiclib
 lsquiclib.depends += bssl
