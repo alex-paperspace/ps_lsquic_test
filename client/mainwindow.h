@@ -2,7 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QTextEdit>
+#include <QPlainTextEdit>
 #include <QLineEdit>
 #include <QPushButton>
 
@@ -18,12 +18,15 @@ class MainWindow : public QMainWindow
 
     QPushButton* m_connectBtn;
 
-    QTextEdit* m_status;
+    QPlainTextEdit* m_status;
 
     QuicClientShared m_client;
 
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+
+public slots:
+    void textSlot(QString);
 };
 #endif // MAINWINDOW_H

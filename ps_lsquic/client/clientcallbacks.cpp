@@ -1,6 +1,6 @@
 #include "clientcallbacks.h"
 
-#include <iostream>
+#include "common/logger.h"
 
 namespace paperspace {
 namespace lsquic {
@@ -8,37 +8,37 @@ namespace lsquic {
 static lsquic_conn_ctx_t *
 client_on_new_conn (void *stream_if_ctx, struct lsquic_conn *conn)
 {
-    std::cout << "New connection" << std::endl;
+    Logger::getInstance().LOG("New connection");
 }
 
 static void
 client_on_conn_closed (struct lsquic_conn *conn)
 {
-    std::cout << "Connection closed" << std::endl;
+    Logger::getInstance().LOG("Connection closed");
 }
 
 static lsquic_stream_ctx_t *
 client_on_new_stream (void *stream_if_ctx, struct lsquic_stream *stream)
 {
-    std::cout << "New stream" << std::endl;
+    Logger::getInstance().LOG("New stream");
 }
 
 static void
 client_on_read (struct lsquic_stream *stream, lsquic_stream_ctx_t *stream_ctx)
 {
-    std::cout << "On read" << std::endl;
+    Logger::getInstance().LOG("On read");
 }
 
 static void
 client_on_write (struct lsquic_stream *stream, lsquic_stream_ctx_t *stream_ctx)
 {
-    std::cout << "On write" << std::endl;
+    Logger::getInstance().LOG("On write");
 }
 
 static void
-client_on_close (struct lsquic_stream *stream, lsquic_stream_ctx_t *h)
+client_on_close (struct lsquic_stream *stream, lsquic_stream_ctx_t *stream_ctx)
 {
-    std::cout << "Stream closed" << std::endl;
+    Logger::getInstance().LOG("Stream closed");
 }
 
 

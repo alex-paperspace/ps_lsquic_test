@@ -2,7 +2,7 @@ TEMPLATE = lib
 CONFIG += staticlib
 TARGET = ps_lsquic
 
-QT       += core
+QT       += core network
 
 CONFIG += c++17
 

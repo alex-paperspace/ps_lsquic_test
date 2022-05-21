@@ -6,6 +6,7 @@
 #include "common/ps_lsquic_ssl.h"
 
 #include <QSharedPointer>
+#include <QUdpSocket>
 
 namespace paperspace {
 namespace lsquic {
@@ -19,15 +20,28 @@ class PS_LSQuicClient : public PS_LSQuicEndpoint
 
     lsquic_engine_api m_eapi;
 
+    //net
+    sockaddr_storage m_local_sas;
+    Address m_targetAddr;
+    QSharedPointer<QUdpSocket> m_sock;
+    lsquic_conn* m_conn;
+
+    //util
+    void cleanup();
+
+
 public:
     explicit PS_LSQuicClient();
-    virtual ~PS_LSQuicClient() {}
+    ~PS_LSQuicClient();
 
     bool isServer() { return false; }
 
     void setIP(QString ip) { m_targetIPStr = ip; }
     void setPort(QString port) { m_targetPortStr = port; }
     void connect();
+
+    int getSockFD();
+
 };
 
 }

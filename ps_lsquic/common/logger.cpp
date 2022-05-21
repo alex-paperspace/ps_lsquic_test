@@ -7,6 +7,16 @@
 namespace paperspace {
 namespace lsquic {
 
+void Logger::LOG(const QString &str)
+{
+    emit textSignal(str);
+}
+
+//void Logger::LOG(const std::string &str)
+//{
+//    emit textSignal(QString::fromStdString(str));
+//}
+
 }
 }
 

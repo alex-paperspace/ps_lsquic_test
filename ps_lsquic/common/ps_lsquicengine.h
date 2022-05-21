@@ -13,9 +13,14 @@ class PS_LSQuicEngine
 protected:
 
     lsquic_engine* m_engine;
+    bool m_isValid = false;
 
 public:
     explicit PS_LSQuicEngine(const lsquic_engine_api& api, bool isServer);
+
+    bool isValid() { return m_isValid; }
+
+    lsquic_engine* engine() { return m_engine; }
 
 };
 

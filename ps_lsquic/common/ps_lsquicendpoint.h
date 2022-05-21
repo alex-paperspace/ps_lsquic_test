@@ -5,8 +5,22 @@
 
 #include "lsquic.h"
 
+#include <QtGlobal>
+#ifndef Q_OS_WIN
+#include "arpa/inet.h"
+#else
+#include "winsock2.h"
+#include "wstcpip2.h"
+#endif
+
 namespace paperspace {
 namespace lsquic {
+
+union Address {
+    sockaddr sa;
+    sockaddr_in addr4;
+    sockaddr_in6 addr6;
+};
 
 class PS_LSQuicEndpoint
 {
@@ -16,6 +30,8 @@ protected:
 
 public:
     explicit PS_LSQuicEndpoint();
+    virtual ~PS_LSQuicEndpoint() {}
+
 
     virtual bool isServer() = 0;
 };
