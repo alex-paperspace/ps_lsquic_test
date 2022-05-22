@@ -24,8 +24,6 @@ class PS_LSQuicClient : public PS_LSQuicEndpoint
 
     lsquic_conn* m_conn;
 
-    //util
-    void cleanup() override;
 
 
 public:
@@ -37,6 +35,7 @@ public:
     void setIP(QString ip) { m_targetIPStr = ip; }
     void setPort(QString port) { m_targetPortStr = port; }
     void connect();
+    void disconnect();
 };
 
 }

@@ -11,6 +11,7 @@ MainWindow::MainWindow(QWidget *parent)
     QWidget* centralwgt = new QWidget;
     QVBoxLayout* lay = new QVBoxLayout(centralwgt);
     QHBoxLayout* inputlay = new QHBoxLayout;
+    QHBoxLayout* controllay = new QHBoxLayout;
 
     m_IPLE = new QLineEdit;
     m_IPLE->setPlaceholderText("IP");
@@ -35,7 +36,13 @@ MainWindow::MainWindow(QWidget *parent)
         m_client->setPort(m_PORTLE->text());
         m_client->connect();
     });
-    lay->addWidget(m_connectBtn);
+    m_disconnectBtn = new QPushButton("Disconnect");
+    connect(m_disconnectBtn, &QPushButton::clicked, this, [=]{
+        m_client->disconnect();
+    });
+    controllay->addWidget(m_connectBtn);
+    controllay->addWidget(m_disconnectBtn);
+    lay->addLayout(controllay);
 
     lay->addWidget(m_status);
 

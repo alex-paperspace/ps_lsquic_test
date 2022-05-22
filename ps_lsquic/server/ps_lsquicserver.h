@@ -28,8 +28,6 @@ class PS_LSQuicServer : public PS_LSQuicEndpoint
 
     lsquic_conn* m_conn;
 
-    //util
-    void cleanup() override;
 
 
 public:

@@ -17,6 +17,7 @@ class MainWindow : public QMainWindow
     QLineEdit* m_PORTLE;
 
     QPushButton* m_connectBtn;
+    QPushButton* m_disconnectBtn;
 
     QPlainTextEdit* m_status;
 

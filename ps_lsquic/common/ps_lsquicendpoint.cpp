@@ -75,6 +75,15 @@ void PS_LSQuicEndpoint::process_conns()
     }
 }
 
+void PS_LSQuicEndpoint::cleanup()
+{
+    Logger::getInstance().LOG("Cleaning up.");
+    if (!m_sock.isNull()) {
+        m_sock.clear();
+        m_fd = -1;
+    }
+}
+
 namespace util {
 
 int packets_out(void *packets_out_ctx, const lsquic_out_spec *specs, unsigned count)

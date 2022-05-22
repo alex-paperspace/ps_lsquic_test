@@ -30,7 +30,8 @@ PS_LSQuicClient::PS_LSQuicClient() :
 
 PS_LSQuicClient::~PS_LSQuicClient()
 {
-    cleanup();
+    disconnect();
+
     if ((*m_engine).isValid() && (*m_engine).engine()) {
         lsquic_engine_destroy((*m_engine).engine());
     }
@@ -39,7 +40,8 @@ PS_LSQuicClient::~PS_LSQuicClient()
 
 void PS_LSQuicClient::connect()
 {
-    //cleanup();
+    disconnect();
+
 
     if (m_targetIPStr.isEmpty() || m_targetPortStr.isEmpty()) {
         Logger::getInstance().LOG("Empty input. Aborting...");
@@ -68,7 +70,6 @@ void PS_LSQuicClient::connect()
         m_targetAddr.addr6.sin6_port = htons(port);
     } else {
         Logger::getInstance().LOG("Not a valid IP Address. Aborting...");
-        cleanup();
         return;
     }
 
@@ -79,7 +80,7 @@ void PS_LSQuicClient::connect()
 
     if (m_fd < 0) {
         Logger::getInstance().LOG("Failed to create socket. Aborting...");
-        cleanup();
+        disconnect();
         return;
     }
 
@@ -88,22 +89,17 @@ void PS_LSQuicClient::connect()
     m_local_sa.sin_family = AF_INET;
     if (0 != bind(m_fd, (sockaddr*)&m_local_sa, socklen)) {
         Logger::getInstance().LOGF("Failed to bind socket on %d. errno: %d Aborting...", m_fd, errno);
-        cleanup();
+        disconnect();
         return;
     }
     if (m_sock) {
         Logger::getInstance().LOG("Socket not clean. Aborting...");
-        cleanup();
+        disconnect();
         return;
     }
 
     m_sock = QSharedPointer<QAbstractSocket>(new QAbstractSocket(QAbstractSocket::UdpSocket, nullptr));
     m_sock->setSocketDescriptor(m_fd, QAbstractSocket::UnconnectedState);
-//    if (!(*m_sock).bind(QHostAddress::LocalHost)) {
-//        Logger::getInstance().LOG("Failed to bind socket. Aborting...");
-//        cleanup();
-//        return;
-//    }
 
     QObject::connect(m_sock.data(), &QAbstractSocket::readyRead, [=]{
         Logger::getInstance().LOG("Stuff in socket");
@@ -115,7 +111,7 @@ void PS_LSQuicClient::connect()
                                    &m_targetAddr.sa,                //peer sockaddr
                                    (void*) getSockFD(),             //peer ctx
                                    nullptr,                         //conn ctx
-                                   "psrmw8ycz.vm.paperspace.com",   //sni
+                                   "",   //sni
                                    0,                               //plumptu
                                    nullptr,                         //session resume
                                    0,                               //session resume len
@@ -124,20 +120,24 @@ void PS_LSQuicClient::connect()
 
     if (!m_conn) {
         Logger::getInstance().LOG("Could not create connection. Aborting...");
-        cleanup();
+        disconnect();
         return;
     }
     process_conns();
 
 }
 
-void PS_LSQuicClient::cleanup()
+void PS_LSQuicClient::disconnect()
 {
-    Logger::getInstance().LOG("Cleaning up.");
-    if (!m_sock.isNull()) {
-        m_sock.clear();
+    Logger::getInstance().LOG("Disconnecting.");
+    if (m_conn) {
+        lsquic_conn_going_away(m_conn);
+        lsquic_conn_close(m_conn);
+        m_conn = nullptr;
     }
+    cleanup();
 }
+
 
 }
 }

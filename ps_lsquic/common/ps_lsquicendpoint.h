@@ -39,7 +39,7 @@ protected:
     event_base* m_ebase;
     event* m_timer;
 
-    virtual void cleanup() = 0;
+    void cleanup();
 
 public:
     explicit PS_LSQuicEndpoint();

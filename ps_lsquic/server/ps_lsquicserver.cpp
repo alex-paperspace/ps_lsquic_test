@@ -72,13 +72,6 @@ void PS_LSQuicServer::listen()
 
 }
 
-void PS_LSQuicServer::cleanup()
-{
-    Logger::getInstance().LOG("Cleaning up.");
-    if (!m_sock.isNull()) {
-        m_sock.clear();
-    }
-}
 
 }
 }
