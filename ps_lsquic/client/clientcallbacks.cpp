@@ -9,6 +9,7 @@ static lsquic_conn_ctx_t *
 client_on_new_conn (void *stream_if_ctx, struct lsquic_conn *conn)
 {
     Logger::getInstance().LOG("New connection");
+    return nullptr;
 }
 
 static void

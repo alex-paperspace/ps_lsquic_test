@@ -9,3 +9,6 @@ include(../lsquiclib/link_lsquic.pri)
 
 #zlib
 LIBS += -lz
+
+INCLUDEPATH += /usr/local/include
+LIBS += -L/usr/local/lib -levent

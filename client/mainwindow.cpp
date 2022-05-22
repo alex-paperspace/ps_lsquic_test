@@ -6,6 +6,7 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
+    setMinimumSize(500,800);
 
     QWidget* centralwgt = new QWidget;
     QVBoxLayout* lay = new QVBoxLayout(centralwgt);

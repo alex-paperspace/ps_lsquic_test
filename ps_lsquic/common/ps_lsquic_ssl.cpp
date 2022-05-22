@@ -1,6 +1,7 @@
 #include "ps_lsquic_ssl.h"
 
 #include <iostream>
+#include "common/logger.h"
 
 namespace paperspace {
 namespace lsquic {
@@ -43,6 +44,7 @@ int PS_LSQuicSSL::load_cert(const char *cert_file, const char *key_file)
 
 SSL_CTX *get_ssl_ctx(void *peer_ctx, const sockaddr*)
 {
+    Logger::getInstance().LOG("Get SSL_CTX");
     return PS_LSQuicSSL::getInstance().m_ssl_ctx;
 }
 

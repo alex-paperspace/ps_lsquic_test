@@ -24,6 +24,7 @@ public:
     }
 
     void LOG(const QString& str);
+    void LOGF(const char* fmt...);
     //void LOG(const std::string& str);
 
 signals:

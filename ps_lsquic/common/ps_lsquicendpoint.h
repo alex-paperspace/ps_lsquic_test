@@ -6,6 +6,7 @@
 #include "lsquic.h"
 
 #include <QtGlobal>
+#include <event2/event.h>
 #ifndef Q_OS_WIN
 #include "arpa/inet.h"
 #else
@@ -28,12 +29,18 @@ protected:
 
     QuicEngineShared m_engine;
 
+    //event
+    event_base* m_ebase;
+    event* m_timer;
+
 public:
     explicit PS_LSQuicEndpoint();
-    virtual ~PS_LSQuicEndpoint() {}
+    virtual ~PS_LSQuicEndpoint();
 
 
     virtual bool isServer() = 0;
+
+    void process_conns();
 };
 
 namespace util {

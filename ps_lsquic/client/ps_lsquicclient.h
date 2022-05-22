@@ -2,8 +2,8 @@
 #define PS_LSQUICCLIENT_H
 
 #include "common/ps_lsquicendpoint.h"
-#include "clientcallbacks.h"
 #include "common/ps_lsquic_ssl.h"
+#include "clientcallbacks.h"
 
 #include <QSharedPointer>
 #include <QUdpSocket>
@@ -21,10 +21,12 @@ class PS_LSQuicClient : public PS_LSQuicEndpoint
     lsquic_engine_api m_eapi;
 
     //net
-    sockaddr_storage m_local_sas;
+    sockaddr_in m_local_sa;
     Address m_targetAddr;
-    QSharedPointer<QUdpSocket> m_sock;
+    QSharedPointer<QAbstractSocket> m_sock;
+    int m_fd = 0;
     lsquic_conn* m_conn;
+
 
     //util
     void cleanup();
@@ -40,8 +42,12 @@ public:
     void setPort(QString port) { m_targetPortStr = port; }
     void connect();
 
+    int writeDatagram(const QNetworkDatagram& dg);
+
     int getSockFD();
 
+    const QString &targetIPStr() const;
+    const QString &targetPortStr() const;
 };
 
 }
