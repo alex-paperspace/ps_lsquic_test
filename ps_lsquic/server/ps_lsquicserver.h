@@ -19,8 +19,8 @@ class PS_LSQuicServer : public PS_LSQuicEndpoint
     lsquic_engine_api m_eapi;
 
     //laziness for now
-    const char* m_certfileStr = "/Users/alexmalynovsky/projects/ps_lsquic_test/mycert-cert.pem";
-    const char* m_keyfileStr = "/Users/alexmalynovsky/projects/ps_lsquic_test/mycert-key.pem";
+    const char* m_certfileStr = "mycert-cert.pem";
+    const char* m_keyfileStr = "mycert-key.pem";
 
     sockaddr_in m_local_sa;
     QSharedPointer<QAbstractSocket> m_sock;

@@ -40,5 +40,9 @@ include(../lsquiclib/link_lsquic.pri)
 #zlib
 LIBS += -lz
 
-INCLUDEPATH += /usr/local/include
-LIBS += -L/usr/local/lib -levent
+unix: {
+INCLUDEPATH += /usr/local/include \
+               /opt/homebrew/include \
+LIBS += -L/usr/local/lib -L/opt/homebrew/lib -levent
+}
+
