@@ -2,17 +2,18 @@
 #define PS_LSQUICENDPOINT_H
 
 #include "ps_lsquicengine.h"
-
 #include "lsquic.h"
-
-#include <QtGlobal>
-#include <event2/event.h>
 #ifndef Q_OS_WIN
 #include "arpa/inet.h"
 #else
 #include "winsock2.h"
 #include "wstcpip2.h"
 #endif
+
+#include <QAbstractSocket>
+#include <QtGlobal>
+
+#include <event2/event.h>
 
 namespace paperspace {
 namespace lsquic {
@@ -29,9 +30,16 @@ protected:
 
     QuicEngineShared m_engine;
 
+    //net
+    sockaddr_in m_local_sa;
+    QSharedPointer<QAbstractSocket> m_sock;
+    int m_fd = 0;
+
     //event
     event_base* m_ebase;
     event* m_timer;
+
+    virtual void cleanup() = 0;
 
 public:
     explicit PS_LSQuicEndpoint();
@@ -40,6 +48,7 @@ public:
 
     virtual bool isServer() = 0;
 
+    int getSockFD();
     void process_conns();
 };
 

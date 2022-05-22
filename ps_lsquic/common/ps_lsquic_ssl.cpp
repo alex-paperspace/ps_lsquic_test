@@ -13,7 +13,7 @@ int PS_LSQuicSSL::load_cert(const char *cert_file, const char *key_file)
     m_ssl_ctx = SSL_CTX_new(TLS_method());
     if (!m_ssl_ctx)
     {
-        std::cerr << "SSL_CTX_new failed" << std::endl;
+        Logger::getInstance().LOG("SSL_CTX_new failed");
         goto end;
     }
     SSL_CTX_set_min_proto_version(m_ssl_ctx, TLS1_3_VERSION);
@@ -21,13 +21,13 @@ int PS_LSQuicSSL::load_cert(const char *cert_file, const char *key_file)
     SSL_CTX_set_default_verify_paths(m_ssl_ctx);
     if (1 != SSL_CTX_use_certificate_chain_file(m_ssl_ctx, cert_file))
     {
-        std::cerr << "SSL_CTX_use_certificate_chain_file failed" << std::endl;
+        Logger::getInstance().LOG("SSL_CTX_use_certificate_chain_file failed");
         goto end;
     }
     if (1 != SSL_CTX_use_PrivateKey_file(m_ssl_ctx, key_file,
                                                             SSL_FILETYPE_PEM))
     {
-        std::cerr << "SSL_CTX_use_PrivateKey_file failed" << std::endl;
+        Logger::getInstance().LOG("SSL_CTX_use_PrivateKey_file failed");
         goto end;
     }
     rv = 0;

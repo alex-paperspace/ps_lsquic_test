@@ -1,5 +1,6 @@
 #include "ps_lsquicclient.h"
 #include "common/logger.h"
+#include "common/ps_lsquic_ssl.h"
 
 #include <unistd.h>
 
@@ -38,7 +39,7 @@ PS_LSQuicClient::~PS_LSQuicClient()
 
 void PS_LSQuicClient::connect()
 {
-    cleanup();
+    //cleanup();
 
     if (m_targetIPStr.isEmpty() || m_targetPortStr.isEmpty()) {
         Logger::getInstance().LOG("Empty input. Aborting...");
@@ -47,7 +48,6 @@ void PS_LSQuicClient::connect()
 
     if (!m_engine->isValid()) {
         Logger::getInstance().LOG("Engine not valid. Aborting...");
-        cleanup();
         return;
     }
 
@@ -105,7 +105,7 @@ void PS_LSQuicClient::connect()
 //        return;
 //    }
 
-    QObject::connect(m_sock.data(), &QUdpSocket::readyRead, [=]{
+    QObject::connect(m_sock.data(), &QAbstractSocket::readyRead, [=]{
         Logger::getInstance().LOG("Stuff in socket");
     });
 
@@ -131,38 +131,9 @@ void PS_LSQuicClient::connect()
 
 }
 
-int PS_LSQuicClient::writeDatagram(const QNetworkDatagram &dg)
-{
-    //return m_sock->writeDatagram(dg);
-}
-
-int PS_LSQuicClient::getSockFD()
-{
-    //return m_fd;
-    if (m_sock.isNull()) {
-        return -1;
-    }
-
-    return (*m_sock).socketDescriptor();
-}
-
-const QString &PS_LSQuicClient::targetIPStr() const
-{
-    return m_targetIPStr;
-}
-
-const QString &PS_LSQuicClient::targetPortStr() const
-{
-    return m_targetPortStr;
-}
-
 void PS_LSQuicClient::cleanup()
 {
     Logger::getInstance().LOG("Cleaning up.");
-//    if (m_fd) {
-//        close(m_fd);
-//        m_fd = 0;
-//    }
     if (!m_sock.isNull()) {
         m_sock.clear();
     }

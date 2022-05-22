@@ -13,7 +13,7 @@ class ServerCallbacks
 public:
     ServerCallbacks();
 
-    lsquic_stream_if getStreamInterface() { return m_interface; }
+    lsquic_stream_if* getInterface() { return &m_interface; }
 };
 
 }

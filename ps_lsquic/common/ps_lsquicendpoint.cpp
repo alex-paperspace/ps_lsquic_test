@@ -6,6 +6,7 @@
 #include <QNetworkDatagram>
 #include <QTimer>
 //libevent usage is unfinished. need to run loop in separate thread?
+//or switch to QTimer singleshots, but no microsecond accuracy
 //#define PS_USE_LIBEVENT
 
 namespace paperspace {
@@ -32,6 +33,17 @@ PS_LSQuicEndpoint::~PS_LSQuicEndpoint()
     event_base_free(m_ebase);
 #endif
 }
+
+int PS_LSQuicEndpoint::getSockFD()
+{
+    //return m_fd;
+    if (m_sock.isNull()) {
+        return -1;
+    }
+
+    return (*m_sock).socketDescriptor();
+}
+
 
 void PS_LSQuicEndpoint::process_conns()
 {
@@ -69,8 +81,8 @@ int packets_out(void *packets_out_ctx, const lsquic_out_spec *specs, unsigned co
 {
     Logger::getInstance().LOG("Packets Out");
 
-    PS_LSQuicClient* client = static_cast<PS_LSQuicClient*>(packets_out_ctx);
-    int sockfd = client->getSockFD();
+    PS_LSQuicEndpoint* ep = static_cast<PS_LSQuicEndpoint*>(packets_out_ctx);
+    int sockfd = ep->getSockFD();
     Logger::getInstance().LOGF("Socket FD: %d", sockfd);
 
     struct msghdr msg;
@@ -93,28 +105,7 @@ int packets_out(void *packets_out_ctx, const lsquic_out_spec *specs, unsigned co
             Logger::getInstance().LOGF("%d Characters sent.", charsSent);
         }
     }
-    //    return (int) n;
-
-//    unsigned n;
-//    for (n = 0; n < count; ++n) {
-//        QNetworkDatagram datagram;
-
-//        char buf[8192] = { 0 };
-//        memcpy(&buf, specs[n].iov->iov_base, specs[n].iov->iov_len);
-//        QByteArray baData(buf);
-
-//        datagram.setDestination(QHostAddress(client->targetIPStr()), client->targetPortStr().toInt());
-//        datagram.setData(baData);
-
-//        int nBytes = client->writeDatagram(datagram);
-//        if (nBytes == -1) {
-//            Logger::getInstance().LOG("Failed to write datagram");
-//        } else {
-//            Logger::getInstance().LOGF("%d Bytes sent.", nBytes);
-//        }
-//    }
-
-//    return n;
+    return (int) n;
 }
 
 }

@@ -6,6 +6,12 @@ client.depends += \
     lsquiclib \
     bssl
 
+SUBDIRS += server
+server.depends += \
+    ps_lsquic \
+    lsquiclib \
+    bssl
+
 SUBDIRS += bssl #boringssl build wrapper
 
 SUBDIRS += lsquiclib #lsquic build wrapper
