@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 
 #include <QApplication>
+#include <QtGlobal>
 
 #include "common/ps_lsquic_lib_initializer.h"
 
@@ -12,10 +13,13 @@ int main(int argc, char *argv[])
         a.exit(1);
     }
 
+
+#ifdef Q_OS_WIN
     WORD wVersionRequested;
     wVersionRequested = MAKEWORD( 2, 2 );
     WSADATA wsaData;
     WSAStartup(wVersionRequested, &wsaData);
+#endif
 
     MainWindow w;
     w.show();
