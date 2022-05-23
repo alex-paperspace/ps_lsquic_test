@@ -2,8 +2,6 @@
 #include "common/logger.h"
 #include "common/ps_lsquic_ssl.h"
 
-#include <unistd.h>
-
 namespace paperspace {
 namespace lsquic {
 

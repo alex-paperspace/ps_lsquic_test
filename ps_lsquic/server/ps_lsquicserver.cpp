@@ -2,10 +2,44 @@
 #include "common/logger.h"
 #include "common/ps_lsquic_ssl.h"
 
-#include <unistd.h>
+
 
 namespace paperspace {
 namespace lsquic {
+
+#ifdef Q_OS_WIN
+LPFN_WSARECVMSG GetWSARecvMsgFunctionPointer()
+{
+    LPFN_WSARECVMSG     lpfnWSARecvMsg = NULL;
+    GUID                guidWSARecvMsg = WSAID_WSARECVMSG;
+    SOCKET              sock = INVALID_SOCKET;
+    DWORD               dwBytes = 0;
+
+    sock = socket(AF_INET6,SOCK_DGRAM,0);
+
+    if(SOCKET_ERROR == WSAIoctl(sock,
+                                SIO_GET_EXTENSION_FUNCTION_POINTER,
+                                &guidWSARecvMsg,
+                                sizeof(guidWSARecvMsg),
+                                &lpfnWSARecvMsg,
+                                sizeof(lpfnWSARecvMsg),
+                                &dwBytes,
+                                NULL,
+                                NULL
+                                ))
+    {
+        Logger::getInstance().LOG("WSAIoctl SIO_GET_EXTENSION_FUNCTION_POINTER");
+        return NULL;
+    }
+
+    if(INVALID_SOCKET != sock) {
+        closesocket(sock);
+        sock = INVALID_SOCKET;
+    }
+
+    return lpfnWSARecvMsg;
+}
+#endif
 
 PS_LSQuicServer::PS_LSQuicServer()
 {
@@ -21,13 +55,18 @@ PS_LSQuicServer::PS_LSQuicServer()
     m_eapi.ea_stream_if = m_cbs.getInterface();
     m_eapi.ea_stream_if_ctx = nullptr;
 
-    //PS_LSQuicSSL::getInstance().load_cert("","");
-
     m_eapi.ea_get_ssl_ctx = get_ssl_ctx;
     m_eapi.ea_settings = NULL; //use defaults, can change later
 
     m_engine = QuicEngineShared(new PS_LSQuicEngine(m_eapi, true));
 
+#ifdef Q_OS_WIN
+    if (NULL == (WSARecvMsg = GetWSARecvMsgFunctionPointer())) {
+        Logger::getInstance().LOG("GetWSARecvMsgFunctionPointer");
+        cleanup();
+        return;
+    }
+#endif
 }
 
 void PS_LSQuicServer::listen()
@@ -64,12 +103,12 @@ void PS_LSQuicServer::listen()
     m_sock = QSharedPointer<QAbstractSocket>(new QAbstractSocket(QAbstractSocket::UdpSocket, nullptr));
     m_sock->setSocketDescriptor(m_fd, QAbstractSocket::UnconnectedState);
 
-    QObject::connect(m_sock.data(), &QAbstractSocket::readyRead, [=]{
-        Logger::getInstance().LOG("Stuff in socket");
-    });
+    m_readEv = event_new(m_ebase, m_fd, EV_READ, util::read_socket, this);
+    event_add(m_readEv, NULL);
 
     Logger::getInstance().LOGF("Listening on port: %d", m_local_sa.sin_port);
 
+    //Logger::getInstance().LOGF("event base dispatch, ret: %d", event_base_dispatch(m_ebase));
 }
 
 

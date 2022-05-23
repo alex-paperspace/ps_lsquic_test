@@ -6,6 +6,10 @@
 
 #include <QSharedPointer>
 
+#include <QtGlobal>
+#ifdef Q_OS_UNIX
+#include "unistd.h"
+#endif
 
 namespace paperspace {
 namespace lsquic {

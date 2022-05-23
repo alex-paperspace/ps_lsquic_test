@@ -12,6 +12,11 @@ int main(int argc, char *argv[])
         a.exit(1);
     }
 
+    WORD wVersionRequested;
+    wVersionRequested = MAKEWORD( 2, 2 );
+    WSADATA wsaData;
+    WSAStartup(wVersionRequested, &wsaData);
+
     MainWindow w;
     w.show();
     return a.exec();

@@ -22,6 +22,8 @@ static lsquic_stream_ctx_t *
 client_on_new_stream (void *stream_if_ctx, struct lsquic_stream *stream)
 {
     Logger::getInstance().LOG("New stream");
+
+    return nullptr;
 }
 
 static void

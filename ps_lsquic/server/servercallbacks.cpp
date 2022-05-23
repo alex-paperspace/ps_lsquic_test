@@ -9,6 +9,7 @@ static lsquic_conn_ctx_t *
 server_on_new_conn (void *stream_if_ctx, struct lsquic_conn *conn)
 {
     Logger::getInstance().LOG("New connection");
+    return nullptr;
 }
 
 static void
@@ -21,6 +22,7 @@ static lsquic_stream_ctx_t *
 server_on_new_stream (void *stream_if_ctx, struct lsquic_stream *stream)
 {
     Logger::getInstance().LOG("New stream");
+    return nullptr;
 }
 
 static void

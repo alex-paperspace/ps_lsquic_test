@@ -2,25 +2,30 @@
 #include "client/ps_lsquicclient.h"
 #include "common/logger.h"
 
+#include <QtGlobal>
+#ifdef Q_OS_WIN
+#include "vc_compat.h"
+#endif
+
 #include <QUdpSocket>
 #include <QNetworkDatagram>
 #include <QTimer>
+
 //libevent usage is unfinished. need to run loop in separate thread?
-//or switch to QTimer singleshots, but no microsecond accuracy
 //#define PS_USE_LIBEVENT
 
 namespace paperspace {
 namespace lsquic {
 
-static void timer_expired(int, short, void* ctx) {
+static void timer_expired(evutil_socket_t, short, void* ctx) {
     PS_LSQuicEndpoint* client = static_cast<PS_LSQuicEndpoint*>(ctx);
     client->process_conns();
 }
 
 PS_LSQuicEndpoint::PS_LSQuicEndpoint()
 {
-#ifdef PS_USE_LIBEVENT
     m_ebase = event_base_new();
+#ifdef PS_USE_LIBEVENT
     m_timer = event_new(m_ebase, -1, 0, timer_expired, this);
 #endif
 }
@@ -75,6 +80,11 @@ void PS_LSQuicEndpoint::process_conns()
     }
 }
 
+event_base *PS_LSQuicEndpoint::ebase() const
+{
+    return m_ebase;
+}
+
 void PS_LSQuicEndpoint::cleanup()
 {
     Logger::getInstance().LOG("Cleaning up.");
@@ -94,8 +104,11 @@ int packets_out(void *packets_out_ctx, const lsquic_out_spec *specs, unsigned co
     int sockfd = ep->getSockFD();
     Logger::getInstance().LOGF("Socket FD: %d", sockfd);
 
+
+    unsigned n = 0;
+#ifdef Q_OS_UNIX
+
     struct msghdr msg;
-    unsigned n;
     memset(&msg, 0, sizeof(msg));
 
     int charsSent = 0;
@@ -114,7 +127,36 @@ int packets_out(void *packets_out_ctx, const lsquic_out_spec *specs, unsigned co
             Logger::getInstance().LOGF("%d Characters sent.", charsSent);
         }
     }
+
+
+#endif
+
+#ifdef Q_OS_WIN
+
+#endif
+
     return (int) n;
+}
+
+
+void read_socket(evutil_socket_t, short, void *ctx)
+{
+
+    PS_LSQuicEndpoint* ep = static_cast<PS_LSQuicEndpoint*>(ctx);
+    //event_base_loopbreak(ep->ebase());
+
+    Logger::getInstance().LOGF("Read socket, fd: %d", ep->getSockFD());
+
+
+//    int nread = WSARecvMsg;
+
+
+
+//    (void) lsquic_engine_packet_in(tut->tut_engine, buf, nread,
+//        (struct sockaddr *) &local_sas,
+//        (struct sockaddr *) &peer_sas,
+//        (void *) (uintptr_t) w->fd, ecn);
+
 }
 
 }

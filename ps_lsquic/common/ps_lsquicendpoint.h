@@ -6,8 +6,7 @@
 #ifndef Q_OS_WIN
 #include "arpa/inet.h"
 #else
-#include "winsock2.h"
-#include "wstcpip2.h"
+//#include "winsock2.h"
 #endif
 
 #include <QAbstractSocket>
@@ -50,11 +49,13 @@ public:
 
     int getSockFD();
     void process_conns();
+    event_base *ebase() const;
 };
 
 namespace util {
 
 int packets_out (void *packets_out_ctx, const lsquic_out_spec *specs, unsigned count);
+void read_socket (evutil_socket_t, short, void* ctx);
 
 }
 

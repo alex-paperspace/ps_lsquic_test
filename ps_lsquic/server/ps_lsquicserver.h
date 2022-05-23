@@ -7,6 +7,15 @@
 #include <QSharedPointer>
 #include <QAbstractSocket>
 
+#include <QtGlobal>
+#ifdef Q_OS_UNIX
+#include "unistd.h"
+#endif
+
+#ifdef Q_OS_WIN
+#include  <Mswsock.h>
+#endif
+
 namespace paperspace {
 namespace lsquic {
 
@@ -25,6 +34,11 @@ class PS_LSQuicServer : public PS_LSQuicEndpoint
     sockaddr_in m_local_sa;
     QSharedPointer<QAbstractSocket> m_sock;
     int m_fd = 0;
+
+    //read event
+    event* m_readEv;
+
+    LPFN_WSARECVMSG WSARecvMsg = NULL;
 
     lsquic_conn* m_conn;
 

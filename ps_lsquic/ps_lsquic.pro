@@ -6,10 +6,13 @@ QT       += core network
 
 CONFIG += c++17
 
+DEFINES += WIN32_LEAN_AND_MEAN
+
 INCLUDEPATH += \
         client \
         common \
         server \
+        ../lsquiclib/lsquic/wincompat \
 
 HEADERS += \
         client/clientcallbacks.h \
@@ -44,5 +47,10 @@ unix: {
 INCLUDEPATH += /usr/local/include \
                /opt/homebrew/include \
 LIBS += -L/usr/local/lib -L/opt/homebrew/lib -levent
+}
+
+win32: {
+INCLUDEPATH += C:\vcpkg\installed\x64-windows-static\include \
+LIBS += -LC:\vcpkg\installed\x64-windows-static\lib -levent
 }
 
