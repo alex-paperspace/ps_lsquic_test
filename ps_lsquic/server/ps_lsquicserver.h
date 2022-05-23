@@ -38,7 +38,9 @@ class PS_LSQuicServer : public PS_LSQuicEndpoint
     //read event
     event* m_readEv;
 
+#ifdef Q_OS_WIN
     LPFN_WSARECVMSG WSARecvMsg = NULL;
+#endif
 
     lsquic_conn* m_conn;
 
