@@ -22,6 +22,7 @@ HEADERS += \
         common/ps_lsquic_ssl.h \
         common/ps_lsquicendpoint.h \
         common/ps_lsquicengine.h \
+    common/ps_lsquicutil.h \
         server/ps_lsquicserver.h \
         server/servercallbacks.h \
 
@@ -34,6 +35,7 @@ SOURCES += \
         common/ps_lsquic_ssl.cpp \
         common/ps_lsquicendpoint.cpp \
         common/ps_lsquicengine.cpp \
+    common/ps_lsquicutil.cpp \
         server/ps_lsquicserver.cpp \
         server/servercallbacks.cpp \
 

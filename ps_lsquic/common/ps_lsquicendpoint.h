@@ -3,6 +3,8 @@
 
 #include "ps_lsquicengine.h"
 #include "lsquic.h"
+
+#include <QtGlobal>
 #ifndef Q_OS_WIN
 #include "arpa/inet.h"
 #else
@@ -10,9 +12,7 @@
 #endif
 
 #include <QUdpSocket>
-#include <QtGlobal>
-
-#include <event2/event.h>
+#include <QTimer>
 
 namespace paperspace {
 namespace lsquic {
@@ -27,18 +27,19 @@ class PS_LSQuicEndpoint
 {
 protected:
 
+    //lsquic
     QuicEngineShared m_engine;
-
     lsquic_engine_api m_eapi;
-
     lsquic_logger_if m_logIF;
+    lsquic_conn* m_conn = nullptr;
 
     //net
     Address m_localAddr;
     QUdpSocket m_sock;
     int m_fd = 0;
 
-    lsquic_conn* m_conn = nullptr;
+    //timer
+    QTimer m_timer;
 
     void cleanup();
 
@@ -55,18 +56,6 @@ public:
     Address& getLocalAddress() { return m_localAddr; }
     lsquic_engine* engine() const;
 };
-
-namespace util {
-
-    int packets_out (void *packets_out_ctx, const lsquic_out_spec *specs, unsigned count);
-
-    void read_socket (PS_LSQuicEndpoint* ep);
-
-    bool QHAToAddress (const QHostAddress& qha, int port, Address* resAddr);
-
-    int lsquicLogCB(void* logger_ctx, const char* buf, size_t len);
-
-} // util
 
 } // lsquic
 } // paperspace

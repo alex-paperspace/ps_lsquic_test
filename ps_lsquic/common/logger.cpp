@@ -15,7 +15,7 @@ void Logger::LOG(const QString &str)
 void Logger::LOGF(const char *fmt...)
 {
     va_list ap;
-    char buf[100];
+    char buf[500];
     va_start(ap, fmt);
     vsnprintf(buf, sizeof(buf), fmt, ap);
     va_end(ap);

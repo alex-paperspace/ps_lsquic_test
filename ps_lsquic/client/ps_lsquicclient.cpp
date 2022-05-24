@@ -1,6 +1,7 @@
 #include "ps_lsquicclient.h"
 #include "common/logger.h"
 #include "common/ps_lsquic_ssl.h"
+#include "common/ps_lsquicutil.h"
 
 #include <QUdpSocket>
 #include <QNetworkDatagram>
