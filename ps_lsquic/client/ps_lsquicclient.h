@@ -16,18 +16,13 @@ namespace lsquic {
 
 class PS_LSQuicClient : public PS_LSQuicEndpoint
 {
-    QString m_targetIPStr;
-    QString m_targetPortStr;
+    QString m_targetIP;
+    int m_targetPort = -1;
 
     ClientCallbacks m_cbs;
 
-    lsquic_engine_api m_eapi;
-
     //net
     Address m_targetAddr;
-
-    lsquic_conn* m_conn;
-
 
 
 public:
@@ -36,8 +31,8 @@ public:
 
     bool isServer() override { return false; }
 
-    void setIP(QString ip) { m_targetIPStr = ip; }
-    void setPort(QString port) { m_targetPortStr = port; }
+    void setIP(QString ip) { m_targetIP = ip; }
+    void setPort(QString port) { m_targetPort = port.toInt(); }
     void connect();
     void disconnect();
 };

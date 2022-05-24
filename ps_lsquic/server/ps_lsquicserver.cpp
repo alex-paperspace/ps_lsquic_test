@@ -69,12 +69,17 @@ PS_LSQuicServer::PS_LSQuicServer()
 #endif
 }
 
+PS_LSQuicServer::~PS_LSQuicServer()
+{
+
+}
+
 void PS_LSQuicServer::listen()
 {
-    //cleanup();
+    cleanup();
 
-    if (m_listenPortStr.isEmpty()) {
-        Logger::getInstance().LOG("Empty input. Aborting...");
+    if (m_listenPort == -1) {
+        Logger::getInstance().LOG("Invalid input. Try setting the port.");
         return;
     }
 
@@ -83,32 +88,28 @@ void PS_LSQuicServer::listen()
         return;
     }
 
-    m_local_sa.sin_family = AF_INET;
-    m_local_sa.sin_addr.s_addr = INADDR_ANY;
-    m_local_sa.sin_port = m_listenPortStr.toInt();
-
-    Logger::getInstance().LOGF("Trying to listen on port: %d", m_local_sa.sin_port);
+    //parse local
+    QHostAddress qha_localAddr(QHostAddress::Any);
 
     //socket
-    m_fd = socket(m_local_sa.sin_family, SOCK_DGRAM, 0);
-
-    int socklen = sizeof(m_local_sa);
-    if (0 != bind(m_fd, (sockaddr*)&m_local_sa, socklen)) {
-        Logger::getInstance().LOGF("Failed to bind socket on %d. errno %d Aborting...", m_fd, errno);
+    if (!m_sock.bind(qha_localAddr, m_listenPort)) {
+        Logger::getInstance().LOGF("Failed to bind socket on %d. Aborting...", m_listenPort);
         cleanup();
         return;
     }
-    Logger::getInstance().LOGF("Bound socket to fd: %d", m_fd);
 
-    m_sock = QSharedPointer<QAbstractSocket>(new QAbstractSocket(QAbstractSocket::UdpSocket, nullptr));
-    m_sock->setSocketDescriptor(m_fd, QAbstractSocket::UnconnectedState);
+    QObject::connect(&m_sock, &QUdpSocket::readyRead, [this]{
+        util::read_socket(this);
+    });
 
-    m_readEv = event_new(m_ebase, m_fd, EV_READ, util::read_socket, this);
-    event_add(m_readEv, NULL);
+    Logger::getInstance().LOGF("Listening on port: %d", m_listenPort);
 
-    Logger::getInstance().LOGF("Listening on port: %d", m_local_sa.sin_port);
-
-    //Logger::getInstance().LOGF("event base dispatch, ret: %d", event_base_dispatch(m_ebase));
+    //natives
+    if (!util::QHAToAddress(qha_localAddr, m_listenPort, &m_localAddr)) {
+        Logger::getInstance().LOG("Failed to convert local QHostAddress to native address. Aborting...");
+        cleanup();
+        return;
+    }
 }
 
 

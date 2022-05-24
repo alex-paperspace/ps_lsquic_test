@@ -21,37 +21,25 @@ namespace lsquic {
 
 class PS_LSQuicServer : public PS_LSQuicEndpoint
 {
-    QString m_listenPortStr;
+    int m_listenPort = -1;
 
     ServerCallbacks m_cbs;
-
-    lsquic_engine_api m_eapi;
 
     //laziness for now
     const char* m_certfileStr = "mycert-cert.pem";
     const char* m_keyfileStr = "mycert-key.pem";
 
-    sockaddr_in m_local_sa;
-    QSharedPointer<QAbstractSocket> m_sock;
-    int m_fd = 0;
-
-    //read event
-    event* m_readEv;
-
 #ifdef Q_OS_WIN
     LPFN_WSARECVMSG WSARecvMsg = NULL;
 #endif
 
-    lsquic_conn* m_conn;
-
-
-
 public:
     explicit PS_LSQuicServer();
+    ~PS_LSQuicServer();
 
     bool isServer() override { return true; }
 
-    void setListenPort(QString portStr) { m_listenPortStr = portStr; }
+    void setListenPort(QString portStr) { m_listenPort = portStr.toInt(); }
     void listen();
 };
 
