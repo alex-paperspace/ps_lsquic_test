@@ -18,14 +18,16 @@ PS_LSQuicClient::PS_LSQuicClient()
     m_eapi.ea_stream_if = m_cbs.getInterface();
     m_eapi.ea_stream_if_ctx = nullptr;
 
-    //PS_LSQuicSSL::getInstance().load_cert("","");
-
     m_eapi.ea_get_ssl_ctx = get_ssl_ctx;
     m_eapi.ea_settings = NULL; //use defaults, can change later
 
     m_engine = QuicEngineShared(new PS_LSQuicEngine(m_eapi, false));
 
-
+    if (-1 == lsquic_set_log_level("debug")) {
+        Logger::getInstance().LOG("Failed setting log level");
+    }
+    m_logIF.log_buf = util::lsquicLogCB;
+    lsquic_logger_init(&m_logIF, nullptr, LLTS_HHMMSSMS);
 }
 
 PS_LSQuicClient::~PS_LSQuicClient()

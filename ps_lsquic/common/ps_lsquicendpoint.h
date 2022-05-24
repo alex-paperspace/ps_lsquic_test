@@ -31,6 +31,8 @@ protected:
 
     lsquic_engine_api m_eapi;
 
+    lsquic_logger_if m_logIF;
+
     //net
     Address m_localAddr;
     QUdpSocket m_sock;
@@ -61,6 +63,8 @@ namespace util {
     void read_socket (PS_LSQuicEndpoint* ep);
 
     bool QHAToAddress (const QHostAddress& qha, int port, Address* resAddr);
+
+    int lsquicLogCB(void* logger_ctx, const char* buf, size_t len);
 
 } // util
 

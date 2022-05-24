@@ -191,6 +191,8 @@ void read_socket(PS_LSQuicEndpoint* ep)
         } else if (success == -1) {
             Logger::getInstance().LOG("Error occurred passing packet in");
         }
+
+        ep->process_conns();
     }
 
 }
@@ -241,6 +243,11 @@ bool QHAToAddress(const QHostAddress &qha, int port, Address* resAddr)
             return false;
         }
     }
+}
+
+int lsquicLogCB(void *, const char *buf, size_t len) {
+    Logger::getInstance().LOGF("%s", buf);
+    return len;
 }
 
 }

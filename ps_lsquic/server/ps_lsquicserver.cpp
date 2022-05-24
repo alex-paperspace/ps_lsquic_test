@@ -58,6 +58,12 @@ PS_LSQuicServer::PS_LSQuicServer()
 
     m_engine = QuicEngineShared(new PS_LSQuicEngine(m_eapi, true));
 
+    if (-1 == lsquic_set_log_level("debug")) {
+        Logger::getInstance().LOG("Failed setting log level");
+    }
+    m_logIF.log_buf = util::lsquicLogCB;
+    lsquic_logger_init(&m_logIF, nullptr, LLTS_HHMMSSMS);
+
 #ifdef Q_OS_WIN
 //    if (NULL == (WSARecvMsg = GetWSARecvMsgFunctionPointer())) {
 //        Logger::getInstance().LOG("GetWSARecvMsgFunctionPointer");
@@ -85,6 +91,9 @@ void PS_LSQuicServer::listen()
         Logger::getInstance().LOG("Engine not valid. Aborting...");
         return;
     }
+
+    unsigned mask = lsquic_engine_quic_versions(engine());
+    Logger::getInstance().LOGF("Quic Versions Supported, Mask: %d", mask);
 
     //parse local
     QHostAddress qha_localAddr(QHostAddress::Any);
