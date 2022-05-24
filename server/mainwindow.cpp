@@ -36,6 +36,12 @@ MainWindow::MainWindow(QWidget *parent)
 
     lay->addWidget(m_status);
 
+    m_clearBtn = new QPushButton("Clear");
+    connect(m_clearBtn, &QPushButton::clicked, this, [=]{
+        m_status->clear();
+    });
+    lay->addWidget(m_clearBtn);
+
     setCentralWidget(centralwgt);
 }
 

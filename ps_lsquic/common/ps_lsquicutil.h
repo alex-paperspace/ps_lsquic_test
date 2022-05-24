@@ -18,6 +18,8 @@ bool QHAToAddress (const QHostAddress& qha, int port, Address* resAddr);
 
 int lsquicLogCB(void* logger_ctx, const char* buf, size_t len);
 
+ssl_ctx_st* no_cert (void *cert_lu_ctx, const struct sockaddr *sa_UNUSED, const char *sni);
+
 } // util
 } // lsquic
 } // paperspace

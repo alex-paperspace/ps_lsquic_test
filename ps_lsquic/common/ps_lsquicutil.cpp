@@ -185,6 +185,11 @@ int lsquicLogCB(void *, const char *buf, size_t len) {
     return len;
 }
 
+ssl_ctx_st *no_cert(void *cert_lu_ctx, const sockaddr *sa_UNUSED, const char *sni)
+{
+    return NULL;
+}
+
 } // util
 } // lsquic
 } // paperspace

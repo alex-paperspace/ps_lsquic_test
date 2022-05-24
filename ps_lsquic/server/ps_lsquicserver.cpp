@@ -43,7 +43,7 @@ namespace lsquic {
 PS_LSQuicServer::PS_LSQuicServer()
 {
     if (0 != PS_LSQuicSSL::getInstance().load_cert(m_certfileStr, m_keyfileStr)) {
-        Logger::getInstance().LOG("Couldn't load cert");
+        Logger::getInstance().LOG("Couldn't load cert/key");
     }
 
     memset(&m_eapi, 0, sizeof(m_eapi));
@@ -54,8 +54,17 @@ PS_LSQuicServer::PS_LSQuicServer()
     m_eapi.ea_stream_if = m_cbs.getInterface();
     m_eapi.ea_stream_if_ctx = nullptr;
 
-    m_eapi.ea_get_ssl_ctx = get_ssl_ctx;
-    m_eapi.ea_settings = NULL; //use defaults, can change later
+    m_eapi.ea_lookup_cert = util::no_cert;
+
+    //m_eapi.ea_get_ssl_ctx = get_ssl_ctx;
+    lsquic_engine_settings settings;
+    lsquic_engine_init_settings(&settings, LSENG_SERVER);
+
+    if (-1 == lsquic_engine_check_settings(&settings, LSENG_SERVER, nullptr, 0)) {
+        Logger::getInstance().LOG("Engine settings not valid");
+    } else {
+        m_eapi.ea_settings = &settings;
+    }
 
     m_engine = QuicEngineShared(new PS_LSQuicEngine(m_eapi, true));
 

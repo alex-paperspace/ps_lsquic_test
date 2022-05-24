@@ -26,8 +26,8 @@ class PS_LSQuicServer : public PS_LSQuicEndpoint
     ServerCallbacks m_cbs;
 
     //laziness for now
-    const char* m_certfileStr = "mycert-cert.pem";
-    const char* m_keyfileStr = "mycert-key.pem";
+    const char* m_certfileStr = "cert.pem";
+    const char* m_keyfileStr = "key.pem";
 
 #ifdef Q_OS_WIN
 //    LPFN_WSARECVMSG WSARecvMsg = NULL;
