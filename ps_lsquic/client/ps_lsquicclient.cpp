@@ -52,6 +52,9 @@ void PS_LSQuicClient::connect()
         return;
     }
 
+    unsigned mask = lsquic_engine_quic_versions(engine());
+    Logger::getInstance().LOGF("Quic Versions Supported, Mask: %d", mask);
+
     //parse addrs
     QHostAddress qha_localAddr(QHostAddress::Any);
     int localport = 8888;

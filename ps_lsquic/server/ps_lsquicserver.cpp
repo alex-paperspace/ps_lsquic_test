@@ -2,43 +2,41 @@
 #include "common/logger.h"
 #include "common/ps_lsquic_ssl.h"
 
-
-
 namespace paperspace {
 namespace lsquic {
 
 #ifdef Q_OS_WIN
-LPFN_WSARECVMSG GetWSARecvMsgFunctionPointer()
-{
-    LPFN_WSARECVMSG     lpfnWSARecvMsg = NULL;
-    GUID                guidWSARecvMsg = WSAID_WSARECVMSG;
-    SOCKET              sock = INVALID_SOCKET;
-    DWORD               dwBytes = 0;
+//LPFN_WSARECVMSG GetWSARecvMsgFunctionPointer()
+//{
+//    LPFN_WSARECVMSG     lpfnWSARecvMsg = NULL;
+//    GUID                guidWSARecvMsg = WSAID_WSARECVMSG;
+//    SOCKET              sock = INVALID_SOCKET;
+//    DWORD               dwBytes = 0;
 
-    sock = socket(AF_INET6,SOCK_DGRAM,0);
+//    sock = socket(AF_INET6,SOCK_DGRAM,0);
 
-    if(SOCKET_ERROR == WSAIoctl(sock,
-                                SIO_GET_EXTENSION_FUNCTION_POINTER,
-                                &guidWSARecvMsg,
-                                sizeof(guidWSARecvMsg),
-                                &lpfnWSARecvMsg,
-                                sizeof(lpfnWSARecvMsg),
-                                &dwBytes,
-                                NULL,
-                                NULL
-                                ))
-    {
-        Logger::getInstance().LOG("WSAIoctl SIO_GET_EXTENSION_FUNCTION_POINTER");
-        return NULL;
-    }
+//    if(SOCKET_ERROR == WSAIoctl(sock,
+//                                SIO_GET_EXTENSION_FUNCTION_POINTER,
+//                                &guidWSARecvMsg,
+//                                sizeof(guidWSARecvMsg),
+//                                &lpfnWSARecvMsg,
+//                                sizeof(lpfnWSARecvMsg),
+//                                &dwBytes,
+//                                NULL,
+//                                NULL
+//                                ))
+//    {
+//        Logger::getInstance().LOG("WSAIoctl SIO_GET_EXTENSION_FUNCTION_POINTER");
+//        return NULL;
+//    }
 
-    if(INVALID_SOCKET != sock) {
-        closesocket(sock);
-        sock = INVALID_SOCKET;
-    }
+//    if(INVALID_SOCKET != sock) {
+//        closesocket(sock);
+//        sock = INVALID_SOCKET;
+//    }
 
-    return lpfnWSARecvMsg;
-}
+//    return lpfnWSARecvMsg;
+//}
 #endif
 
 PS_LSQuicServer::PS_LSQuicServer()
@@ -61,11 +59,11 @@ PS_LSQuicServer::PS_LSQuicServer()
     m_engine = QuicEngineShared(new PS_LSQuicEngine(m_eapi, true));
 
 #ifdef Q_OS_WIN
-    if (NULL == (WSARecvMsg = GetWSARecvMsgFunctionPointer())) {
-        Logger::getInstance().LOG("GetWSARecvMsgFunctionPointer");
-        cleanup();
-        return;
-    }
+//    if (NULL == (WSARecvMsg = GetWSARecvMsgFunctionPointer())) {
+//        Logger::getInstance().LOG("GetWSARecvMsgFunctionPointer");
+//        cleanup();
+//        return;
+//    }
 #endif
 }
 

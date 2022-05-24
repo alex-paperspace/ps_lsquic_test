@@ -13,7 +13,7 @@
 #endif
 
 #ifdef Q_OS_WIN
-#include  <Mswsock.h>
+//#include  <Mswsock.h>
 #endif
 
 namespace paperspace {
@@ -30,7 +30,7 @@ class PS_LSQuicServer : public PS_LSQuicEndpoint
     const char* m_keyfileStr = "mycert-key.pem";
 
 #ifdef Q_OS_WIN
-    LPFN_WSARECVMSG WSARecvMsg = NULL;
+//    LPFN_WSARECVMSG WSARecvMsg = NULL;
 #endif
 
 public:

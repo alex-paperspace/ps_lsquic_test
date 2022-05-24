@@ -40,7 +40,7 @@ int PS_LSQuicEndpoint::getSockFD()
 void PS_LSQuicEndpoint::process_conns()
 {
     Logger::getInstance().LOG("Processing connections.");
-    lsquic_engine_process_conns(m_engine->engine());
+    lsquic_engine_process_conns(this->engine());
 
     int diff;
 //    timeval timeout;
