@@ -2,6 +2,10 @@
 #include "common/logger.h"
 
 #include <QNetworkDatagram>
+#include <QtGlobal>
+#ifdef Q_OS_WIN
+#include "ws2tcpip.h"
+#endif
 
 namespace paperspace {
 namespace lsquic {

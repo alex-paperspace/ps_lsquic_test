@@ -8,7 +8,7 @@
 #ifndef Q_OS_WIN
 #include "arpa/inet.h"
 #else
-//#include "winsock2.h"
+#include "ws2ipdef.h"
 #endif
 
 #include <QUdpSocket>

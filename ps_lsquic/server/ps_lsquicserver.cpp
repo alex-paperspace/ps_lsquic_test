@@ -56,7 +56,7 @@ PS_LSQuicServer::PS_LSQuicServer()
 
     m_eapi.ea_lookup_cert = util::no_cert;
 
-    //m_eapi.ea_get_ssl_ctx = get_ssl_ctx;
+    m_eapi.ea_get_ssl_ctx = get_ssl_ctx;
     lsquic_engine_settings settings;
     lsquic_engine_init_settings(&settings, LSENG_SERVER);
 
