@@ -58,13 +58,13 @@ void PS_LSQuicClient::connect()
     Logger::getInstance().LOGF("Quic Versions Supported, Mask: %d", mask);
 
     //parse addrs
-    QHostAddress qha_localAddr(QHostAddress::Any);
-    int localport = 7654;
+    QHostAddress qha_localAddr = util::getUsableHostAddress();
+    int localport = 7654; //arbitrary
 
     QHostAddress qha_targetAddr(m_targetIP);
 
     //socket
-    if (!m_sock.bind(qha_localAddr, localport)) {
+    if (!m_sock.bind(localport)) {
         Logger::getInstance().LOGF("Failed to bind socket on %d. Aborting...", localport);
         cleanup();
         return;
@@ -87,7 +87,7 @@ void PS_LSQuicClient::connect()
         return;
     }
 
-    Logger::getInstance().LOG("Trying to connect to " + m_targetIP + ":" + m_targetPort + "...");
+    Logger::getInstance().LOG("Trying to connect to " + m_targetIP + ":" + QString::number(m_targetPort) + "...");
 
     m_conn = lsquic_engine_connect((*m_engine).engine(),            //engine
                                    LSQVER_043,                      //version

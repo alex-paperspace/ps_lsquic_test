@@ -3,6 +3,8 @@
 #include "common/ps_lsquic_ssl.h"
 #include "common/ps_lsquicutil.h"
 
+#include <QNetworkInterface>
+
 namespace paperspace {
 namespace lsquic {
 
@@ -105,11 +107,11 @@ void PS_LSQuicServer::listen()
     unsigned mask = lsquic_engine_quic_versions(engine());
     Logger::getInstance().LOGF("Quic Versions Supported, Mask: %d", mask);
 
-    //parse local
-    QHostAddress qha_localAddr(QHostAddress::Any);
+    //local
+    QHostAddress qha_localAddr = util::getUsableHostAddress();
 
     //socket
-    if (!m_sock.bind(qha_localAddr, m_listenPort)) {
+    if (!m_sock.bind(m_listenPort)) {
         Logger::getInstance().LOGF("Failed to bind socket on %d. Aborting...", m_listenPort);
         cleanup();
         return;
@@ -119,7 +121,7 @@ void PS_LSQuicServer::listen()
         util::read_socket(this);
     });
 
-    Logger::getInstance().LOGF("Listening on port: %d", m_listenPort);
+    Logger::getInstance().LOGF("Listening on port: %d", m_sock.localPort());
 
     //natives
     if (!util::QHAToAddress(qha_localAddr, m_listenPort, &m_localAddr)) {

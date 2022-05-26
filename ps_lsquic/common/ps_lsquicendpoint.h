@@ -17,11 +17,7 @@
 namespace paperspace {
 namespace lsquic {
 
-union Address {
-    sockaddr sa;
-    sockaddr_in addr4;
-    sockaddr_in6 addr6;
-};
+typedef sockaddr_storage Address;
 
 class PS_LSQuicEndpoint
 {

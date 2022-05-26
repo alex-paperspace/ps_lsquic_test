@@ -3,6 +3,7 @@
 #include "common/logger.h"
 
 #include <QNetworkDatagram>
+#include <QNetworkInterface>
 #include <QtGlobal>
 #ifdef Q_OS_WIN
 #include "ws2tcpip.h"
@@ -11,6 +12,50 @@
 namespace paperspace {
 namespace lsquic {
 namespace util {
+
+QHostAddress getUsableHostAddress()
+{
+    QList<QNetworkInterface> interfaces = QNetworkInterface::allInterfaces();
+    foreach (const QNetworkInterface& interface, interfaces) {
+        if (interface.flags().testFlag(QNetworkInterface::IsLoopBack) || interface.flags().testFlag(QNetworkInterface::IsPointToPoint)) {
+            continue;
+        }
+
+        if (interface.flags().testFlag(QNetworkInterface::IsUp)) {
+            QList<QNetworkAddressEntry> naEntryList = interface.addressEntries();
+            foreach (const QNetworkAddressEntry& naEntry, naEntryList) {
+                if (naEntry.ip().protocol() == QAbstractSocket::IPv4Protocol) {
+                    return naEntry.ip();
+                }
+            }
+        }
+    }
+    return QHostAddress();
+}
+
+static void populate_sockaddr(int af, int port, char addr[],
+    struct sockaddr_storage *dst, size_t *addrlen) {
+
+    if (af == AF_INET) {
+        struct sockaddr_in *dst_in4 = (struct sockaddr_in *) dst;
+
+        *addrlen = sizeof(*dst_in4);
+        memset(dst_in4, 0, *addrlen);
+        dst_in4->sin_family = af;
+        dst_in4->sin_port = htons(port);
+        inet_pton(af, addr, &dst_in4->sin_addr);
+
+    } else if (af == AF_INET6) {
+        struct sockaddr_in6 *dst_in6 = (struct sockaddr_in6 *) dst;
+
+        *addrlen = sizeof(*dst_in6);
+        memset(dst_in6, 0, *addrlen);
+        dst_in6->sin6_family = af;
+        dst_in6->sin6_port = htons(port);
+
+        inet_pton(af, addr, &dst_in6->sin6_addr);
+    } // else ...
+}
 
 int packets_out(void *packets_out_ctx, const lsquic_out_spec *specs, unsigned count)
 {
@@ -77,8 +122,7 @@ int packets_out(void *packets_out_ctx, const lsquic_out_spec *specs, unsigned co
         }
         dg.setData(ba);
 
-        Logger::getInstance().LOGF("Socket state: %d", ep->socket().state());
-        int bytessent = ep->socket().writeDatagram(ba, dest, port);
+        int bytessent = ep->socket().writeDatagram(dg);
         if (bytessent == -1) {
             Logger::getInstance().LOGF("Failed to send datagram. error-#: %d error-string: %s Aborting...", ep->socket().error(), ep->socket().errorString().toStdString().c_str());
             return -1;
@@ -106,7 +150,7 @@ void read_socket(PS_LSQuicEndpoint* ep)
 
         //get peer address
         Address peerAddr;
-        if (!util::QHAToAddress(dg.senderAddress(), dg.senderPort(), &peerAddr)) {
+        if (!QHAToAddress(dg.senderAddress(), dg.senderPort(), &peerAddr)) {
             Logger::getInstance().LOG("Failed to convert sender QHostAddress to native address. Dropping/Continuing...");
             continue;
         }
@@ -142,21 +186,27 @@ void timer_expired(PS_LSQuicEndpoint *ep)
 bool QHAToAddress(const QHostAddress &qha, int port, Address* resAddr)
 {
     memset(resAddr, 0, sizeof(Address));
+    int success;
     switch (qha.protocol()) {
         case QAbstractSocket::IPv4Protocol:
         case QAbstractSocket::AnyIPProtocol:
         {
             sockaddr_in sa;
             QString ipStr = qha.toString();
-            QByteArray ipBA = ipStr.toLocal8Bit();
 
-            Logger::getInstance().LOGF("IPV4 Address detected: %s", ipStr.toStdString().c_str());
+            size_t socklen;
+            populate_sockaddr(AF_INET, port, const_cast<char*>(ipStr.toStdString().c_str()), resAddr, &socklen);
 
-            sa.sin_family = AF_INET;
-            inet_pton(AF_INET, ipBA.data(), &sa.sin_addr);
-            sa.sin_port = htons(port);
+//            QByteArray ipBA = ipStr.toLocal8Bit();
 
-            resAddr->addr4 = sa;
+//            Logger::getInstance().LOGF("IPV4 Address detected: %s", ipStr.toStdString().c_str());
+
+//            sa.sin_family = AF_INET;
+//            success = inet_pton(AF_INET, ipBA.data(), &sa.sin_addr);
+//            Logger::getInstance().LOGF("qhatoaddr success code: %d", success);
+//            sa.sin_port = htons(port);
+
+//            resAddr->addr4 = sa;
 
             return true;
         }
@@ -164,15 +214,20 @@ bool QHAToAddress(const QHostAddress &qha, int port, Address* resAddr)
         {
             sockaddr_in6 sa;
             QString ipStr = qha.toString();
-            QByteArray ipBA = ipStr.toLocal8Bit();
 
-            Logger::getInstance().LOGF("IPV6 Address detected: %s", ipStr.toStdString().c_str());
+            size_t socklen;
+            populate_sockaddr(AF_INET6, port, const_cast<char*>(ipStr.toStdString().c_str()), resAddr, &socklen);
 
-            sa.sin6_family = AF_INET6;
-            inet_pton(AF_INET6, ipBA.data(), &sa.sin6_addr);
-            sa.sin6_port = htons(port);
+//            QByteArray ipBA = ipStr.toLocal8Bit();
 
-            resAddr->addr6 = sa;
+//            Logger::getInstance().LOGF("IPV6 Address detected: %s", ipStr.toStdString().c_str());
+
+//            sa.sin6_family = AF_INET6;
+//            success = inet_pton(AF_INET6, ipBA.data(), &sa.sin6_addr);
+//            Logger::getInstance().LOGF("qhatoaddr success code: %d", success);
+//            sa.sin6_port = htons(port);
+
+//            resAddr->addr6 = sa;
 
             return true;
         }

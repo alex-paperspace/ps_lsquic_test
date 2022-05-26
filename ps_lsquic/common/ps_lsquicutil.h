@@ -8,6 +8,8 @@ namespace paperspace {
 namespace lsquic {
 namespace util {
 
+QHostAddress getUsableHostAddress();
+
 int packets_out (void *packets_out_ctx, const lsquic_out_spec *specs, unsigned count);
 
 void read_socket (PS_LSQuicEndpoint* ep);
