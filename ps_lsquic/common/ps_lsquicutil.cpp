@@ -150,7 +150,7 @@ void read_socket(PS_LSQuicEndpoint* ep)
 
         //get peer address
         Address peerAddr;
-        if (!QHAToAddress(dg.senderAddress(), dg.senderPort(), &peerAddr)) {
+        if (!QHAToAddress(QHostAddress(dg.senderAddress().toIPv4Address()), dg.senderPort(), &peerAddr)) {
             Logger::getInstance().LOG("Failed to convert sender QHostAddress to native address. Dropping/Continuing...");
             continue;
         }
