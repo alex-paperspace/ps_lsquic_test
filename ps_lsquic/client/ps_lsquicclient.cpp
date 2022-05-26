@@ -19,7 +19,6 @@ PS_LSQuicClient::PS_LSQuicClient()
     m_eapi.ea_stream_if = m_cbs.getInterface();
     m_eapi.ea_stream_if_ctx = nullptr;
 
-    m_eapi.ea_get_ssl_ctx = get_ssl_ctx;
     m_eapi.ea_settings = NULL; //use defaults, can change later
 
     m_engine = QuicEngineShared(new PS_LSQuicEngine(m_eapi, false));
@@ -28,7 +27,7 @@ PS_LSQuicClient::PS_LSQuicClient()
         Logger::getInstance().LOG("Failed setting log level");
     }
     m_logIF.log_buf = util::lsquicLogCB;
-    lsquic_logger_init(&m_logIF, nullptr, LLTS_HHMMSSMS);
+//    lsquic_logger_init(&m_logIF, nullptr, LLTS_HHMMSSMS);
 }
 
 PS_LSQuicClient::~PS_LSQuicClient()
@@ -60,7 +59,7 @@ void PS_LSQuicClient::connect()
 
     //parse addrs
     QHostAddress qha_localAddr(QHostAddress::Any);
-    int localport = 8888;
+    int localport = 7654;
 
     QHostAddress qha_targetAddr(m_targetIP);
 
@@ -96,7 +95,7 @@ void PS_LSQuicClient::connect()
                                    (sockaddr*) &m_targetAddr,       //peer sockaddr
                                    nullptr,                         //peer ctx
                                    nullptr,                         //conn ctx
-                                   "psr5qrh59.vm.paperspace.com",   //sni
+                                   "localhost",   //sni
                                    0,                               //plumptu
                                    nullptr,                         //session resume
                                    0,                               //session resume len

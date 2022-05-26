@@ -1,4 +1,5 @@
 #include "ps_lsquicutil.h"
+#include "common/ps_lsquic_ssl.h"
 #include "common/logger.h"
 
 #include <QNetworkDatagram>
@@ -76,6 +77,7 @@ int packets_out(void *packets_out_ctx, const lsquic_out_spec *specs, unsigned co
         }
         dg.setData(ba);
 
+        Logger::getInstance().LOGF("Socket state: %d", ep->socket().state());
         int bytessent = ep->socket().writeDatagram(ba, dest, port);
         if (bytessent == -1) {
             Logger::getInstance().LOGF("Failed to send datagram. error-#: %d error-string: %s Aborting...", ep->socket().error(), ep->socket().errorString().toStdString().c_str());
@@ -187,11 +189,6 @@ int lsquicLogCB(void *, const char *buf, size_t len) {
     fprintf(stderr, "%s\n", buf);
     Logger::getInstance().LOGF("%s", buf);
     return len;
-}
-
-ssl_ctx_st *no_cert(void *cert_lu_ctx, const sockaddr *sa_UNUSED, const char *sni)
-{
-    return NULL;
 }
 
 } // util

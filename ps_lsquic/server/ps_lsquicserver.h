@@ -3,6 +3,7 @@
 
 #include "common/ps_lsquicendpoint.h"
 #include "servercallbacks.h"
+#include "common/ps_lsquic_ssl.h"
 
 #include <QSharedPointer>
 #include <QAbstractSocket>
@@ -24,6 +25,8 @@ class PS_LSQuicServer : public PS_LSQuicEndpoint
     int m_listenPort = -1;
 
     ServerCallbacks m_cbs;
+
+    PS_LSQuicSSL m_ssl;
 
     //laziness for now
     const char* m_certfileStr = "cert.pem";

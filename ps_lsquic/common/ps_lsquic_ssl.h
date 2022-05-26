@@ -2,6 +2,8 @@
 #define PS_LSQUIC_SSL_H
 
 #include <QtGlobal>
+#include <QMap>
+#include <QSharedPointer>
 
 #include <openssl/ssl.h>
 
@@ -14,26 +16,43 @@
 namespace paperspace {
 namespace lsquic {
 
+//Even though the library is forcing us to parse SNI and lookup
+//a proper cert, we are one machine and should just return the one cert
+//that we created
+
+//However these class declarations are structured in a way to allow for multiple certs
+//to not be confusing.
+
+class PS_LSQuicServerCert
+{
+public:
+    SSL_CTX* ssl_ctx;
+
+    ~PS_LSQuicServerCert();
+};
+
+typedef QSharedPointer<PS_LSQuicServerCert> ServerCert;
+
 class PS_LSQuicSSL
 {
-private:
-    PS_LSQuicSSL() {}
 
-    PS_LSQuicSSL(PS_LSQuicSSL const&);
-    void operator=(PS_LSQuicSSL const&);
+    QMap<QString, ServerCert> m_sniMap;
 
 public:
-    static PS_LSQuicSSL& getInstance()
-    {
-        static PS_LSQuicSSL instance;
-        return instance;
-    }
+    explicit PS_LSQuicSSL();
+    ~PS_LSQuicSSL();
 
-    int load_cert(const char *cert_file, const char *key_file);
+    SSL_CTX* prog_ssl_ctx;
 
-    SSL_CTX* m_ssl_ctx;
+    ServerCert getCertbySNI(QString sni);
+
+    int load_cert(const char* sni, const char *cert_file, const char *key_file);
 
 };
+
+ssl_ctx_st* no_cert (void *cert_lu_ctx, const struct sockaddr *sa_UNUSED, const char *sni);
+
+ssl_ctx_st* lookup_cert (void *cert_lu_ctx, const struct sockaddr *sa_UNUSED, const char *sni);
 
 SSL_CTX* get_ssl_ctx(void *peer_ctx, const sockaddr*);
 
