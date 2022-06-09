@@ -15,19 +15,25 @@ class MainWindow : public QMainWindow
 
     QLineEdit* m_IPLE;
     QLineEdit* m_PORTLE;
+    QLineEdit* m_SNILE;
 
     QPushButton* m_connectBtn;
     QPushButton* m_disconnectBtn;
+    QPushButton* m_sendBtn;
 
+    QPlainTextEdit* m_chatIn;
+    QPlainTextEdit* m_chatOut;
     QPlainTextEdit* m_status;
 
     QuicClientShared m_client;
+
+    QFile m_log;
 
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
 public slots:
-    void textSlot(QString);
+    void statusTextSlot(QString);
 };
 #endif // MAINWINDOW_H

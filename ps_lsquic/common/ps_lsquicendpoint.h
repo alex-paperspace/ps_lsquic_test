@@ -19,8 +19,9 @@ namespace lsquic {
 
 typedef sockaddr_storage Address;
 
-class PS_LSQuicEndpoint
+class PS_LSQuicEndpoint : public QObject
 {
+
 protected:
 
     //lsquic
@@ -47,10 +48,14 @@ public:
 
     virtual bool isServer() = 0;
 
-    int getSockFD();
     QUdpSocket& socket() { return m_sock; }
     Address& getLocalAddress() { return m_localAddr; }
     lsquic_engine* engine() const;
+
+    QByteArray recvbuf;
+
+    //disconnects socket signals, used for connection closure
+    void disconnectSocket();
 };
 
 } // lsquic

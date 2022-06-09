@@ -54,7 +54,7 @@ static void populate_sockaddr(int af, int port, char addr[],
         dst_in6->sin6_port = htons(port);
 
         inet_pton(af, addr, &dst_in6->sin6_addr);
-    } // else ...
+    }
 }
 
 int packets_out(void *packets_out_ctx, const lsquic_out_spec *specs, unsigned count)
@@ -62,8 +62,6 @@ int packets_out(void *packets_out_ctx, const lsquic_out_spec *specs, unsigned co
     Logger::getInstance().LOG("Packets Out");
 
     PS_LSQuicEndpoint* ep = static_cast<PS_LSQuicEndpoint*>(packets_out_ctx);
-    int sockfd = ep->getSockFD();
-    Logger::getInstance().LOGF("Socket FD: %d", sockfd);
 
     unsigned n = 0;
 
@@ -197,17 +195,6 @@ bool QHAToAddress(const QHostAddress &qha, int port, Address* resAddr)
             size_t socklen;
             populate_sockaddr(AF_INET, port, const_cast<char*>(ipStr.toStdString().c_str()), resAddr, &socklen);
 
-//            QByteArray ipBA = ipStr.toLocal8Bit();
-
-//            Logger::getInstance().LOGF("IPV4 Address detected: %s", ipStr.toStdString().c_str());
-
-//            sa.sin_family = AF_INET;
-//            success = inet_pton(AF_INET, ipBA.data(), &sa.sin_addr);
-//            Logger::getInstance().LOGF("qhatoaddr success code: %d", success);
-//            sa.sin_port = htons(port);
-
-//            resAddr->addr4 = sa;
-
             return true;
         }
         case QAbstractSocket::IPv6Protocol:
@@ -217,17 +204,6 @@ bool QHAToAddress(const QHostAddress &qha, int port, Address* resAddr)
 
             size_t socklen;
             populate_sockaddr(AF_INET6, port, const_cast<char*>(ipStr.toStdString().c_str()), resAddr, &socklen);
-
-//            QByteArray ipBA = ipStr.toLocal8Bit();
-
-//            Logger::getInstance().LOGF("IPV6 Address detected: %s", ipStr.toStdString().c_str());
-
-//            sa.sin6_family = AF_INET6;
-//            success = inet_pton(AF_INET6, ipBA.data(), &sa.sin6_addr);
-//            Logger::getInstance().LOGF("qhatoaddr success code: %d", success);
-//            sa.sin6_port = htons(port);
-
-//            resAddr->addr6 = sa;
 
             return true;
         }

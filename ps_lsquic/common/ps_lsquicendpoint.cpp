@@ -28,14 +28,6 @@ PS_LSQuicEndpoint::~PS_LSQuicEndpoint()
 
 }
 
-int PS_LSQuicEndpoint::getSockFD()
-{
-    if (!m_sock.isValid()) {
-        return -1;
-    }
-    return m_sock.socketDescriptor();
-}
-
 //TODO: use signals/slots to implement this mechanism, granularity is 1ms anyway
 void PS_LSQuicEndpoint::process_conns()
 {
@@ -62,13 +54,21 @@ lsquic_engine* PS_LSQuicEndpoint::engine() const
     return m_engine->engine();
 }
 
+void PS_LSQuicEndpoint::disconnectSocket()
+{
+    if (!m_sock.disconnect()) {
+        Logger::getInstance().LOG("Failed to disconnect socket signals");
+    }
+}
+
 void PS_LSQuicEndpoint::cleanup()
 {
     Logger::getInstance().LOG("Cleaning up.");
     if (m_sock.isValid() || m_sock.isOpen()) {
         m_sock.close();
-//        delete m_sock;
-//        m_sock = nullptr;
+    }
+    if (m_conn) {
+        m_conn = nullptr;
     }
 }
 

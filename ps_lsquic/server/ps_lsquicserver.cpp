@@ -50,7 +50,7 @@ PS_LSQuicServer::PS_LSQuicServer()
     m_eapi.ea_packets_out_ctx = this;
 
     m_eapi.ea_stream_if = m_cbs.getInterface();
-    m_eapi.ea_stream_if_ctx = nullptr;
+    m_eapi.ea_stream_if_ctx = this;
 
     m_eapi.ea_lookup_cert = lookup_cert;
     m_eapi.ea_cert_lu_ctx = (void*) &m_ssl;
@@ -58,6 +58,8 @@ PS_LSQuicServer::PS_LSQuicServer()
     m_eapi.ea_get_ssl_ctx = get_ssl_ctx;
     lsquic_engine_settings settings;
     lsquic_engine_init_settings(&settings, LSENG_SERVER);
+
+    settings.es_versions = LSQUIC_GQUIC_HEADER_VERSIONS;
 
     if (-1 == lsquic_engine_check_settings(&settings, LSENG_SERVER, nullptr, 0)) {
         Logger::getInstance().LOG("Engine settings not valid");
@@ -67,11 +69,11 @@ PS_LSQuicServer::PS_LSQuicServer()
 
     m_engine = QuicEngineShared(new PS_LSQuicEngine(m_eapi, true));
 
-    if (-1 == lsquic_set_log_level("debug")) {
-        Logger::getInstance().LOG("Failed setting log level");
-    }
+//    if (-1 == lsquic_set_log_level("debug")) {
+//        Logger::getInstance().LOG("Failed setting log level");
+//    }
     m_logIF.log_buf = util::lsquicLogCB;
-//    lsquic_logger_init(&m_logIF, nullptr, LLTS_HHMMSSMS);
+    lsquic_logger_init(&m_logIF, nullptr, LLTS_HHMMSSMS);
 
 #ifdef Q_OS_WIN
 //    if (NULL == (WSARecvMsg = GetWSARecvMsgFunctionPointer())) {

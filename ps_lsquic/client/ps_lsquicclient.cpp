@@ -17,17 +17,17 @@ PS_LSQuicClient::PS_LSQuicClient()
     m_eapi.ea_packets_out_ctx = this;
 
     m_eapi.ea_stream_if = m_cbs.getInterface();
-    m_eapi.ea_stream_if_ctx = nullptr;
+    m_eapi.ea_stream_if_ctx = this;
 
     m_eapi.ea_settings = NULL; //use defaults, can change later
 
     m_engine = QuicEngineShared(new PS_LSQuicEngine(m_eapi, false));
 
-    if (-1 == lsquic_set_log_level("debug")) {
+    if (-1 == lsquic_set_log_level("info")) {
         Logger::getInstance().LOG("Failed setting log level");
     }
     m_logIF.log_buf = util::lsquicLogCB;
-//    lsquic_logger_init(&m_logIF, nullptr, LLTS_HHMMSSMS);
+    lsquic_logger_init(&m_logIF, nullptr, LLTS_HHMMSSMS);
 }
 
 PS_LSQuicClient::~PS_LSQuicClient()
@@ -44,7 +44,7 @@ void PS_LSQuicClient::connect()
 {
     disconnect();
 
-    if (m_targetIP.isEmpty() || m_targetPort == -1) {
+    if (m_targetIP.isEmpty() || m_targetPort == -1 || m_targetSNI.isEmpty()) {
         Logger::getInstance().LOG("Invalid inputs. Try setting IP and PORT.");
         return;
     }
@@ -95,7 +95,7 @@ void PS_LSQuicClient::connect()
                                    (sockaddr*) &m_targetAddr,       //peer sockaddr
                                    nullptr,                         //peer ctx
                                    nullptr,                         //conn ctx
-                                   "localhost",   //sni
+                                   m_targetSNI.toStdString().c_str(),   //sni
                                    0,                               //plumptu
                                    nullptr,                         //session resume
                                    0,                               //session resume len
@@ -114,10 +114,21 @@ void PS_LSQuicClient::connect()
 void PS_LSQuicClient::disconnect()
 {
     Logger::getInstance().LOG("Disconnecting.");
-    if (m_conn) {
-        //TODO
+    if (m_conn){
+        lsquic_conn_close(m_conn);
+        process_conns();
     }
     cleanup();
+}
+
+void PS_LSQuicClient::sendData(QByteArray data)
+{
+    if (!m_conn) {
+        return;
+    }
+    dataToSend = data;
+    lsquic_conn_make_stream(m_conn);
+    process_conns();
 }
 
 
