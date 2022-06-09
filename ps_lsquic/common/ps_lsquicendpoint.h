@@ -38,8 +38,6 @@ protected:
     //timer
     QTimer m_timer;
 
-    void cleanup();
-
 public:
     explicit PS_LSQuicEndpoint();
     virtual ~PS_LSQuicEndpoint();
@@ -53,6 +51,8 @@ public:
     lsquic_engine* engine() const;
 
     QByteArray recvbuf;
+
+    void cleanup();
 
     //disconnects socket signals, used for connection closure
     void disconnectSocket();

@@ -19,8 +19,17 @@ PS_LSQuicClient::PS_LSQuicClient()
     m_eapi.ea_stream_if = m_cbs.getInterface();
     m_eapi.ea_stream_if_ctx = this;
 
-    m_eapi.ea_settings = NULL; //use defaults, can change later
+    lsquic_engine_settings settings;
+    lsquic_engine_init_settings(&settings, 0);
 
+    settings.es_versions = LSQUIC_GQUIC_HEADER_VERSIONS;
+    settings.es_support_tcid0 = false;
+
+    if (-1 == lsquic_engine_check_settings(&settings, LSENG_SERVER, nullptr, 0)) {
+        Logger::getInstance().LOG("Engine settings not valid");
+    } else {
+        m_eapi.ea_settings = &settings;
+    }
     m_engine = QuicEngineShared(new PS_LSQuicEngine(m_eapi, false));
 
     if (-1 == lsquic_set_log_level("info")) {
@@ -94,7 +103,7 @@ void PS_LSQuicClient::connect()
                                    (sockaddr*) &m_localAddr,        //local sockaddr
                                    (sockaddr*) &m_targetAddr,       //peer sockaddr
                                    nullptr,                         //peer ctx
-                                   nullptr,                         //conn ctx
+                                   (lsquic_conn_ctx_t*)this,        //conn ctx
                                    m_targetSNI.toStdString().c_str(),   //sni
                                    0,                               //plumptu
                                    nullptr,                         //session resume

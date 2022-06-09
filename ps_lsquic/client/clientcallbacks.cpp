@@ -16,6 +16,14 @@ static void
 client_on_conn_closed (struct lsquic_conn *conn)
 {
     Logger::getInstance().LOG("Connection closed");
+    lsquic_conn_ctx_t* ctx = lsquic_conn_get_ctx(conn);
+    QuicClient* client = static_cast<QuicClient*>((void*)ctx);
+    if (!client) {
+        Logger::getInstance().LOG("Context Invalid, aborting conn closure");
+        return;
+    }
+
+    client->cleanup();
 
 }
 

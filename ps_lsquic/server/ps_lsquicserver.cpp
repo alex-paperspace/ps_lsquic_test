@@ -60,6 +60,7 @@ PS_LSQuicServer::PS_LSQuicServer()
     lsquic_engine_init_settings(&settings, LSENG_SERVER);
 
     settings.es_versions = LSQUIC_GQUIC_HEADER_VERSIONS;
+    settings.es_support_tcid0 = false;
 
     if (-1 == lsquic_engine_check_settings(&settings, LSENG_SERVER, nullptr, 0)) {
         Logger::getInstance().LOG("Engine settings not valid");
