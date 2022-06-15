@@ -48,7 +48,7 @@ public:
 
 };
 
-ssl_ctx_st* no_cert (void *cert_lu_ctx, const struct sockaddr *sa_UNUSED, const char *sni);
+extern "C" ssl_ctx_st* no_cert (void *cert_lu_ctx, const struct sockaddr *sa_UNUSED, const char *sni);
 
 //not sure why i need to use C-style symbol exporting for the "server" program to link successfully to these methods
 extern "C" ssl_ctx_st* lookup_cert (void *cert_lu_ctx, const struct sockaddr *sa_UNUSED, const char *sni);

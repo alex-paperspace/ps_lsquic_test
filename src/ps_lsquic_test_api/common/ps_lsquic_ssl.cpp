@@ -93,7 +93,12 @@ ssl_ctx_st *lookup_cert(void *cert_lu_ctx, const sockaddr *sa_UNUSED, const char
     Logger::getInstance().LOG("Cert Lookup");
     PS_LSQuicSSL* ssl = static_cast<PS_LSQuicSSL*>(cert_lu_ctx);
     QString sniStr(sni);
-    return ssl->getCertbySNI(sniStr)->ssl_ctx;
+    /* We cannot use the sni provided by the client.
+     * That is solely used by the quic-proxy to do ip lookup.
+     * When a server loads a cert, it always loads it into key=localhost.
+     * So when we lookup the cert, we have to specify the cert located at key=localhost.
+     */
+    return ssl->getCertbySNI("localhost")->ssl_ctx;
 }
 
 ssl_ctx_st *get_ssl_ctx(void *peer_ctx, const sockaddr*)

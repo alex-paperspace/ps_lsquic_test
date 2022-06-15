@@ -22,11 +22,14 @@ class MainWindow : public QMainWindow
 
     QuicServerShared m_server;
 
+    QFile m_log;
+
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
 public slots:
     void textSlot(QString);
+    void logText(QString);
 };
 #endif // MAINWINDOW_H

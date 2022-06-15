@@ -4,7 +4,8 @@
 #include <QBoxLayout>
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent)
+    : QMainWindow(parent),
+      m_log("serverdebug")
 {
     setMinimumSize(500,800);
 
@@ -22,6 +23,11 @@ MainWindow::MainWindow(QWidget *parent)
 
     paperspace::lsquic::Logger* loggerptr = &paperspace::lsquic::Logger::getInstance();
     connect(loggerptr, &paperspace::lsquic::Logger::textSignal, this, &MainWindow::textSlot);
+
+    if (!m_log.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        loggerptr->LOG("Could not open log device");
+    }
+    connect(loggerptr, &paperspace::lsquic::Logger::textSignal, this, &MainWindow::logText);
 
     m_server = QuicServerShared(new QuicServer);
 
@@ -47,10 +53,21 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
+    m_log.close();
 }
 
 void MainWindow::textSlot(QString str)
 {
     m_status->appendPlainText(str);
+}
+
+void MainWindow::logText(QString txt)
+{
+    if (m_log.isWritable()) {
+        QTextStream ts(&m_log);
+        ts << txt << '\n';
+        ts.flush();
+        m_log.flush();
+    }
 }
 
