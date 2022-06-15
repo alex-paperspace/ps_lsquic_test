@@ -1,2 +1,0 @@
-echo Building BoringSSL (Windows)
-
