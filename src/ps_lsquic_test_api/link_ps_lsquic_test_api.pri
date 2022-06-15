@@ -1,8 +1,8 @@
 CONFIG(release, debug|release) {
 
     unix: {
-        LIBS += -L$$OUT_PWD/../ps_lsquic_test_api/release -lps_lsquic
-        PRE_TARGETDEPS += $$OUT_PWD/../ps_lsquic_test_api/release/libps_lsquic.a
+        LIBS += -L$$OUT_PWD/../ps_lsquic_test_api -lps_lsquic
+        PRE_TARGETDEPS += $$OUT_PWD/../ps_lsquic_test_api/libps_lsquic.a
     }
 
     win32: {
@@ -15,8 +15,8 @@ CONFIG(release, debug|release) {
 CONFIG(debug, debug|release) {
 
     unix: {
-        LIBS += -L$$OUT_PWD/../ps_lsquic_test_api/debug -lps_lsquic
-        PRE_TARGETDEPS += $$OUT_PWD/../ps_lsquic_test_api/debug/libps_lsquic.a
+        LIBS += -L$$OUT_PWD/../ps_lsquic_test_api -lps_lsquic
+        PRE_TARGETDEPS += $$OUT_PWD/../ps_lsquic_test_api/libps_lsquic.a
     }
 
     win32: {
