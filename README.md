@@ -18,8 +18,8 @@ Once, the engine is instantiated on both sides with no errors, you should be abl
 
 Since this project is not finished, here's what I'm working on:
 
-- ~~Get the handshake to function. Since these are clients/servers run on my local network, sni parsing doesn't exactly work as expected yet.
-- ~~provide sni input on client
-- ~~start working on client/server callbacks
+- ~~Get the handshake to function. Since these are clients/servers run on my local network, sni parsing doesn't exactly work as expected yet.~~
+- ~~provide sni input on client~~
+- ~~start working on client/server callbacks~~
 - Improve stability, especially for cross-platform communication
 
